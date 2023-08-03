@@ -44,11 +44,10 @@ function Board({correctWord, wordList}) {
 
     }, [currentGuess, guesses, isGameOver, correctWord, wordList]);
 
-
     return (
         <div className={"board"}>
             {[0, 1, 2, 3, 4, 5].map(id => <Row key={id} id={id} guesses={guesses} currentGuess={currentGuess} correctWord={correctWord}/>)}
-            {isGameOver && <p>The word is {correctWord}!</p>}
+            {isGameOver && <p>The word is {correctWord.toUpperCase()}</p>}
         </div>
     )
 }
