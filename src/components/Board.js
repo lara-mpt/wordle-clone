@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
 import Row from "./Row";
 
-function Board({correctWord}) {
+function Board({correctWord, wordList}) {
     const [guesses, setGuesses] = useState([]);
-    const [currentGuess, setCurrentGuess] = useState("");
+    const [currentGuess, setCurrentGuess] = useState('');
     const [isGameOver, setIsGameOver] = useState(false);
 
-    useEffect(() => {
+    function isAlphabetical(key) {
+        return /^[a-zA-Z]$/.test(key);
+    }
 
+    useEffect(() => {
         if (guesses.length > 5) {
             setIsGameOver(true);
         }
@@ -18,29 +21,19 @@ function Board({correctWord}) {
             }
 
             if (event.key === 'Backspace') {
-                setCurrentGuess(currentGuess => currentGuess.slice(0, -1));
-                return;
-            }
+                setCurrentGuess((prevGuess) => prevGuess.slice(0, -1));
+            } else if (event.key === 'Enter') {
+                if (currentGuess.length === 5 && wordList.includes(currentGuess) && !guesses.includes(currentGuess)) {
+                    setGuesses((prevGuesses) => [...prevGuesses, currentGuess]);
+                    setCurrentGuess('');
 
-            if (event.key === 'Enter' && currentGuess.length === 5) {
-                if (currentGuess.length !== 5) {
-                    return;
+                    if (currentGuess === correctWord || guesses.length >= 5) {
+                        setIsGameOver(true);
+                    }
                 }
-
-                setGuesses([...guesses, currentGuess]);
-
-                if (currentGuess === correctWord) {
-                    setIsGameOver(true)
-                }
-                setCurrentGuess("");
-                return;
+            } else if (currentGuess.length < 5 && isAlphabetical(event.key)) {
+                setCurrentGuess((prevGuess) => prevGuess + event.key);
             }
-
-            if (currentGuess.length >= 5) {
-                return;
-            }
-
-            setCurrentGuess(oldGuess => oldGuess + event.key);
         };
 
         window.addEventListener('keydown', handleType);
@@ -49,7 +42,7 @@ function Board({correctWord}) {
             window.removeEventListener('keydown', handleType);
         }
 
-    }, [currentGuess, guesses, isGameOver, correctWord]);
+    }, [currentGuess, guesses, isGameOver, correctWord, wordList]);
 
 
     return (
